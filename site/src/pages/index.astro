@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RepoCard from '../components/RepoCard.astro';
+import { url } from '../lib/url';
+import { parentGroups, recentlyStarred, stats } from '../lib/data';
+
+const groups = parentGroups();
+const recent = recentlyStarred(8);
+---
+<Layout title="Home">
+  <h1>GitHub Stars, Organized</h1>
+  <p class="subtitle">
+    {stats.total_repos} starred repos auto-clustered into {stats.total_topics} topics.
+    <a href={url('/search')}>Search</a> or browse by <a href={url('/topics')}>topic</a> / <a href={url('/tags')}>tag</a>.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat"><span class="num">{stats.total_repos}</span><span class="label">repos</span></div>
+    <div class="stat"><span class="num">{stats.total_topics}</span><span class="label">topics</span></div>
+    <div class="stat"><span class="num">{stats.total_tags}</span><span class="label">tags</span></div>
+    <div class="stat"><span class="num">{Object.keys(stats.language_histogram).length}</span><span class="label">languages</span></div>
+  </div>
+
+  {groups.map((g) => (
+    <section class="group-section">
+      <h2>{g.label} · {g.size} repos</h2>
+      <div class="grid">
+        {g.topics.map((t) => (
+          <a class="topic-card" href={url(`/topic/${t.slug}`)}>
+            <h3>{t.label}</h3>
+            <div class="count">{t.size} repos</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="group-section">
+    <h2>Recently Starred</h2>
+    <div class="grid">
+      {recent.map((r) => <RepoCard repo={r} showTopic />)}
+    </div>
+  </section>
+</Layout>

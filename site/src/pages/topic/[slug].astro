@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RepoCard from '../../components/RepoCard.astro';
+import { url } from '../../lib/url';
+import { getTopic, reposFor, siblingTopics, topics } from '../../lib/data';
+
+export function getStaticPaths() {
+  return topics.map((t) => ({ params: { slug: t.slug } }));
+}
+
+const { slug } = Astro.params;
+const topic = getTopic(slug)!;
+const repos = reposFor(topic.repo_ids).sort((a, b) => b.stargazers_count - a.stargazers_count);
+const siblings = siblingTopics(topic);
+---
+<Layout title={topic.label}>
+  <div class="breadcrumb"><a href={url('/topics')}>Topics</a> / {topic.label}</div>
+  <h1>{topic.label}</h1>
+  <p class="subtitle">{topic.size} repos · keywords: {topic.keywords.slice(0, 8).join(', ')}</p>
+
+  <div class="grid">
+    {repos.map((r) => <RepoCard repo={r} />)}
+  </div>
+
+  {siblings.length > 0 && (
+    <section class="group-section" style="margin-top: 48px;">
+      <h2>Related Topics</h2>
+      <div class="chips">
+        {siblings.map((t) => (
+          <a class="chip" href={url(`/topic/${t.slug}`)}>{t.label} ({t.size})</a>
+        ))}
+      </div>
+    </section>
+  )}
+</Layout>

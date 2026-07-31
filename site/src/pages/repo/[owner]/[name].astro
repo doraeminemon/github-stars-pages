@@ -1,0 +1,62 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import RepoCard from '../../../components/RepoCard.astro';
+import { url } from '../../../lib/url';
+import { getTag, getTopic, relatedRepos, repos } from '../../../lib/data';
+
+export function getStaticPaths() {
+  return repos.map((r) => ({ params: { owner: r.owner, name: r.name }, props: { repo: r } }));
+}
+
+const { repo } = Astro.props;
+const topic = repo.topic_slug ? getTopic(repo.topic_slug) : undefined;
+const related = relatedRepos(repo, 12);
+---
+<Layout title={repo.full_name} description={repo.description ?? undefined}>
+  <div class="breadcrumb"><a href={url('/')}>Home</a> / {repo.full_name}</div>
+  <h1>{repo.full_name}</h1>
+  {repo.description && <p class="subtitle">{repo.description}</p>}
+
+  <div class="meta-row" style="margin-bottom: 20px;">
+    <span>★ {repo.stargazers_count}</span>
+    <span>{repo.forks_count} forks</span>
+    {repo.language && <span>{repo.language}</span>}
+    {repo.license && <span>{repo.license}</span>}
+    {repo.archived && <span>archived</span>}
+    {repo.fork && <span>fork</span>}
+    <span>starred {new Date(repo.starred_at).toLocaleDateString()}</span>
+  </div>
+
+  <div class="meta-row" style="margin-bottom: 20px;">
+    <a class="chip" href={repo.html_url} target="_blank" rel="noopener">View on GitHub →</a>
+    {repo.homepage && <a class="chip" href={repo.homepage} target="_blank" rel="noopener">Homepage →</a>}
+  </div>
+
+  {topic && (
+    <p>Topic: <a class="chip" href={url(`/topic/${topic.slug}`)}>{topic.label}</a></p>
+  )}
+
+  {repo.tags.length > 0 && (
+    <div class="chips" style="margin-bottom: 24px;">
+      {repo.tags.map((slug) => (
+        <a class="chip" href={url(`/tag/${slug}`)}>{getTag(slug)?.label ?? slug}</a>
+      ))}
+    </div>
+  )}
+
+  {repo.readme_excerpt && (
+    <section class="group-section">
+      <h2>From the README</h2>
+      <p style="color: var(--fg-muted);">{repo.readme_excerpt}</p>
+    </section>
+  )}
+
+  {related.length > 0 && (
+    <section class="group-section">
+      <h2>Related Repos</h2>
+      <div class="grid">
+        {related.map((r) => <RepoCard repo={r} showTopic />)}
+      </div>
+    </section>
+  )}
+</Layout>

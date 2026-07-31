@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/url';
+import { tags } from '../lib/data';
+
+const sorted = [...tags].sort((a, b) => b.repo_ids.length - a.repo_ids.length);
+---
+<Layout title="Tags">
+  <h1>All Tags</h1>
+  <p class="subtitle">{sorted.length} tags (GitHub topics + languages), 3+ repos each.</p>
+  <div class="chips" style="gap: 10px;">
+    {sorted.map((t) => (
+      <a class="chip" href={url(`/tag/${t.slug}`)} style="font-size: 0.95rem; padding: 6px 14px;">
+        {t.label} <span style="opacity: 0.6;">({t.repo_ids.length})</span>
+      </a>
+    ))}
+  </div>
+</Layout>

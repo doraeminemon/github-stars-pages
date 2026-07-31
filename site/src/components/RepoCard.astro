@@ -1,0 +1,34 @@
+---
+import { url } from '../lib/url';
+import { getTag, getTopic, type Repo } from '../lib/data';
+
+interface Props {
+  repo: Repo;
+  showTopic?: boolean;
+}
+
+const { repo, showTopic = false } = Astro.props;
+const topic = repo.topic_slug ? getTopic(repo.topic_slug) : undefined;
+const formatStars = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+---
+<div class="card">
+  <h3>
+    <a href={url(`/repo/${repo.owner}/${repo.name}`)}>{repo.full_name}</a>
+  </h3>
+  {repo.description && <p class="desc">{repo.description}</p>}
+  <div class="meta-row">
+    <span>★ {formatStars(repo.stargazers_count)}</span>
+    {repo.language && <span>{repo.language}</span>}
+    {repo.archived && <span>archived</span>}
+    {showTopic && topic && (
+      <a class="chip" href={url(`/topic/${topic.slug}`)}>{topic.label}</a>
+    )}
+  </div>
+  {repo.tags.length > 0 && (
+    <div class="chips">
+      {repo.tags.slice(0, 6).map((slug) => (
+        <a class="chip" href={url(`/tag/${slug}`)}>{getTag(slug)?.label ?? slug}</a>
+      ))}
+    </div>
+  )}
+</div>

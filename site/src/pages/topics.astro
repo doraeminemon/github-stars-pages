@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/url';
+import { topics } from '../lib/data';
+
+const sorted = [...topics].sort((a, b) => b.size - a.size);
+---
+<Layout title="Topics">
+  <h1>All Topics</h1>
+  <p class="subtitle">{sorted.length} auto-discovered topics, largest first.</p>
+  <div class="grid">
+    {sorted.map((t) => (
+      <a class="topic-card" href={url(`/topic/${t.slug}`)}>
+        <h3>{t.label}</h3>
+        <div class="count">{t.size} repos</div>
+      </a>
+    ))}
+  </div>
+</Layout>

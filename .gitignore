@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.uv-cache/
+
+# Data (generated; topic_registry.json is the one exception, committed explicitly)
+data/stars.json
+data/cache/
+data/embeddings.npy
+data/embeddings_meta.json
+data/topics_result.json
+data/*.tmp
+
+# Node / Astro
+site/node_modules/
+site/dist/
+site/.astro/
+site/src/data/*.json
+site/public/search/
+site/public/models/
+
+# Misc
+.DS_Store
+*.log

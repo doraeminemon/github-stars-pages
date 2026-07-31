@@ -1,0 +1,38 @@
+---
+import '../styles/global.css';
+import { url } from '../lib/url';
+import { stats } from '../lib/data';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Browse doraeminemon’s GitHub stars by topic, tag, and semantic search.' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · GitHub Stars</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a class="brand" href={url('/')}>⭐ Stars</a>
+        <a class="navlink" href={url('/topics')}>Topics</a>
+        <a class="navlink" href={url('/tags')}>Tags</a>
+        <a class="navlink" href={url('/search')}>Search</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      {stats.total_repos} starred repos · {stats.total_topics} topics · {stats.total_tags} tags
+    </footer>
+  </body>
+</html>

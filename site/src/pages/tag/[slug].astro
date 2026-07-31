@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RepoCard from '../../components/RepoCard.astro';
+import { url } from '../../lib/url';
+import { getTag, reposFor, tags } from '../../lib/data';
+
+export function getStaticPaths() {
+  return tags.map((t) => ({ params: { slug: t.slug } }));
+}
+
+const { slug } = Astro.params;
+const tag = getTag(slug)!;
+const repos = reposFor(tag.repo_ids).sort((a, b) => b.stargazers_count - a.stargazers_count);
+---
+<Layout title={tag.label}>
+  <div class="breadcrumb"><a href={url('/tags')}>Tags</a> / {tag.label}</div>
+  <h1>{tag.label}</h1>
+  <p class="subtitle">{repos.length} repos</p>
+  <div class="grid">
+    {repos.map((r) => <RepoCard repo={r} showTopic />)}
+  </div>
+</Layout>
